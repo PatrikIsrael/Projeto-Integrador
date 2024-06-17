@@ -1,0 +1,145 @@
+/* Definição de variáveis CSS para as cores */
+:root {
+    --cor-primaria: #4a90e2; /* Azul primário */
+    --cor-secundaria: #6c757d; /* Cinza */
+    --cor-fundo: #ffffff; /* Branco */
+    --cor-texto: #333333; /* Preto */
+    --font-principal: 'Roboto', sans-serif;
+    --font-secundaria: 'Open Sans', sans-serif;
+
+    /* Paleta de cores personalizada */
+    --cor-bg-body: #f2f4f8; /* Fundo principal */
+    --cor-bg-header: #4a90e2; /* Fundo do cabeçalho */
+    --cor-btn-primary: #4a90e2; /* Botão principal */
+    --cor-btn-primary-hover: #357bd8; /* Hover do botão principal */
+}
+
+/* Estilos gerais */
+body {
+    font-family: var(--font-secundaria);
+    background-color: var(--cor-bg-body);
+    color: var(--cor-texto);
+    margin: 0;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-principal);
+    font-weight: bold;
+    color: var(--cor-primaria);
+}
+
+a {
+    color: var(--cor-btn-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--cor-btn-primary-hover);
+}
+
+/* Cabeçalho */
+header {
+    background-color: var(--cor-bg-header);
+    padding: 15px 0;
+    text-align: center;
+}
+
+/* Botões */
+.btn-primary, .btn-secondary {
+    background-color: var(--cor-btn-primary);
+    border-color: var(--cor-btn-primary);
+    transition: background-color 0.3s ease;
+    color: #ffffff; /* Cor do texto nos botões */
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    background-color: var(--cor-btn-primary-hover);
+    border-color: var(--cor-btn-primary-hover);
+}
+
+/* Formulários */
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--cor-fundo);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    margin-bottom: 10px;
+    color: var(--cor-primaria); /* Cor dos labels */
+}
+
+form input[type="text"], form input[type="email"], form input[type="password"], form input[type="date"], form textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form button[type="submit"] {
+    margin-top: 15px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Página Inicial */
+h1 {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 3rem;
+    color: var(--cor-primaria); /* Cor do título */
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+}
+
+/* Login do Paciente */
+#login {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#login form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Login do Administrador */
+#admin-login {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#admin-login form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Cadastro de Paciente */
+#cadastro-paciente {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#cadastro-paciente form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center mb-4">Bem-vindo ao Sistema de Consulta</h1>
+            <div class="text-center">
+                <a th:href="@{/admin/login}" class="btn btn-primary btn-lg mr-3">Área Administrativa</a>
+                <a th:href="@{/paciente/login}" class="btn btn-secondary btn-lg">Área do Paciente</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/jquery/jquery-3.7.1.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

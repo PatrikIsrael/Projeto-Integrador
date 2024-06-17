@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcar Consulta</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Marcar Consulta</h1>
+    <form th:action="@{/marcarConsulta}" th:object="${consulta}" method="post">
+        <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" th:field="*{descricao}" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="data">Data:</label>
+            <input type="date" id="data" th:field="*{data}" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="medico">Médico:</label>
+            <select id="medico" th:field="*{medico}" class="form-control" required>
+                <option th:each="medico : ${medicos}" th:value="${medico.id}" th:text="${medico.nome}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Marcar Consulta</button>
+    </form>
+</div>
+
+<script th:src="@{/jquery/jquery-3.7.1.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Paciente</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <h1 class="mb-4">Bem-vindo, <span th:text="${paciente.nome}">Nome do Paciente</span>!</h1>
+
+    <div class="row">
+        <!-- Dados do paciente -->
+        <div class="col-md-6">
+            <h2>Seus dados:</h2>
+            <ul class="list-group mb-4">
+                <li class="list-group-item">Nome: <span th:text="${paciente.nome}">Nome</span></li>
+                <li class="list-group-item">Email: <span th:text="${paciente.email}">Email</span></li>
+                <li class="list-group-item">CPF: <span th:text="${paciente.cpf}">CPF</span></li>
+                <li class="list-group-item">Telefone: <span th:text="${paciente.telefone}">Telefone</span></li>
+                <li class="list-group-item">Data de Nascimento: <span th:text="${paciente.dataNascimento}">Data de Nascimento</span></li>
+            </ul>
+        </div>
+
+        <!-- Consultas -->
+        <div class="col-md-6">
+            <h2>Consultas</h2>
+
+            <!-- Mensagem se tiver 10 consultas marcadas -->
+            <div th:if="${consultasPaciente != null and consultasPaciente.size() >= 10}">
+                <p>Você já possui 10 consultas marcadas. Não é possível agendar mais consultas.</p>
+                <a th:href="@{/paciente/dashboard}" class="btn btn-secondary btn-lg">Voltar ao Dashboard</a>
+            </div>
+
+            <!-- Formulário para marcar consulta -->
+            <div th:if="${consultasPaciente != null and consultasPaciente.size() < 10}">
+                <form th:action="@{/paciente/marcarConsulta}" th:object="${consulta}" method="post">
+                    <div class="form-group">
+                        <label for="descricao">Descrição:</label>
+                        <input type="text" id="descricao" class="form-control" th:field="*{descricao}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data">Data:</label>
+                        <input type="date" id="data" class="form-control" th:field="*{data}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medico">Médico:</label>
+                        <select id="medico" class="form-control" th:field="*{medico}" required>
+                            <option th:each="medico : ${medicos}" th:value="${medico.id}" th:text="${medico.nome}"></option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Marcar Consulta</button>
+                </form>
+            </div>
+
+            <!-- Mensagem se não tiver consultas marcadas -->
+            <div th:if="${consultasPaciente == null or consultasPaciente.isEmpty()}">
+                <p>Você ainda não tem consultas marcadas.</p>
+                <a th:href="@{/marcarConsulta}" class="btn btn-secondary btn-lg">Marcar Consulta</a>
+            </div>
+
+            <!-- Tabela de consultas marcadas -->
+            <div th:if="${consultasPaciente != null and not consultasPaciente.isEmpty()}">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Médico</th>
+                        <th>Especialidade</th>
+                        <th>Detalhes</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="consulta : ${consultasPaciente}">
+                        <td th:text="${consulta.data}">Data</td>
+                        <td th:text="${consulta.medico.nome}">Médico</td>
+                        <td th:text="${consulta.medico.especialidade}">Especialidade</td>
+                        <td th:text="${consulta.descricao}">Detalhes</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/jquery/jquery-3.7.1.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Administrador</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1 class="text-center mb-4">Dashboard do Administrador</h1>
+
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">CRM</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Especialidade</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="medico, iterStat : ${medicos}">
+                    <th scope="row" th:text="${iterStat.count}"></th>
+                    <td th:text="${medico.crm}"></td>
+                    <td th:text="${medico.nome}"></td>
+                    <td th:text="${medico.especialidade}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+
+            <div class="text-center">
+                <a href="/admin/nova-equipe" class="btn btn-primary mb-3">Registrar Médico</a>
+                <a href="/" class="btn btn-secondary mb-3">Voltar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/jquery/jquery-3.7.1.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>
