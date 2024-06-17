@@ -1,6 +1,7 @@
 package com.example.Projeto.Controller;
 
 import com.example.Projeto.Data.Consulta;
+import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
 import com.example.Projeto.Services.ConsultaService;
 import com.example.Projeto.Services.PacienteService;
@@ -59,12 +60,19 @@ public class PacienteController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, @SessionAttribute("paciente") Paciente paciente) {
+    public String pacienteDashboard(Model model, @SessionAttribute("paciente") Paciente paciente) {
         model.addAttribute("paciente", paciente);
-        List<Consulta> consultasPaciente = pacienteService.listarConsultasPorPaciente(paciente);
+
+        // Aqui você deve inicializar o objeto consulta se necessário
+        Consulta consulta = new Consulta(); // Ou outra lógica para obter uma nova consulta
+        model.addAttribute("consulta", consulta);
+
+        List<Consulta> consultasPaciente = consultaService.findConsultasByPaciente(paciente.getId());
         model.addAttribute("consultasPaciente", consultasPaciente);
+
+        List<Medico> medicos = consultaService.getAllMedicos(); // Ou outra forma de obter a lista de médicos
+        model.addAttribute("medicos", medicos);
+
         return "paciente/paciente_dashboard";
     }
-
-
 }

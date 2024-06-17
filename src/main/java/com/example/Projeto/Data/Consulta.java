@@ -1,7 +1,9 @@
 package com.example.Projeto.Data;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 public class Consulta {
@@ -11,19 +13,18 @@ public class Consulta {
     private Long id;
 
     private String descricao;
-
-    @Column(name = "data_consulta")
     private LocalDate data;
-
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
-    private Medico medico;
+    private LocalTime horario;
 
     @ManyToOne
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
-    // Getters e Setters
+    @ManyToOne
+    @JoinColumn(name = "medico_id")
+    private Medico medico;
+
+    // Getters e setters
 
     public Long getId() {
         return id;
@@ -49,12 +50,12 @@ public class Consulta {
         this.data = data;
     }
 
-    public Medico getMedico() {
-        return medico;
+    public LocalTime getHorario() {
+        return horario;
     }
 
-    public void setMedico(Medico medico) {
-        this.medico = medico;
+    public void setHorario(LocalTime horario) {
+        this.horario = horario;
     }
 
     public Paciente getPaciente() {
@@ -63,5 +64,13 @@ public class Consulta {
 
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
+    }
+
+    public Medico getMedico() {
+        return medico;
+    }
+
+    public void setMedico(Medico medico) {
+        this.medico = medico;
     }
 }
