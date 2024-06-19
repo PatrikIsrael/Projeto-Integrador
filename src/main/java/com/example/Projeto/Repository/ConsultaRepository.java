@@ -22,4 +22,6 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     List<Consulta> findByOrderByDataAscHorarioAsc(); // Ordenação por data e horário
 
     List<Consulta> findByPaciente_Id(Long idPaciente);
+
+    boolean existsByMedicoAndDataAndHorario(Medico medico, LocalDate data, LocalTime horario);
 }
