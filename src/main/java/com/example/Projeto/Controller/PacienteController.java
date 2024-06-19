@@ -5,10 +5,14 @@ import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
 import com.example.Projeto.Services.ConsultaService;
 import com.example.Projeto.Services.PacienteService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -26,6 +30,17 @@ public class PacienteController {
     @GetMapping("/login")
     public String login() {
         return "paciente/paciente_login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, SessionStatus status, RedirectAttributes redirectAttributes) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        status.setComplete(); // Finaliza a sessão Spring
+        redirectAttributes.addFlashAttribute("successMessage", "Logout efetuado com sucesso!");
+        return "redirect:/paciente/login";
     }
 
     @PostMapping("/login")
@@ -63,16 +78,17 @@ public class PacienteController {
     public String pacienteDashboard(Model model, @SessionAttribute("paciente") Paciente paciente) {
         model.addAttribute("paciente", paciente);
 
-        // Aqui você deve inicializar o objeto consulta se necessário
-        Consulta consulta = new Consulta(); // Ou outra lógica para obter uma nova consulta
+
+        Consulta consulta = new Consulta();
         model.addAttribute("consulta", consulta);
 
         List<Consulta> consultasPaciente = consultaService.findConsultasByPaciente(paciente.getId());
         model.addAttribute("consultasPaciente", consultasPaciente);
 
-        List<Medico> medicos = consultaService.getAllMedicos(); // Ou outra forma de obter a lista de médicos
+        List<Medico> medicos = consultaService.getAllMedicos();
         model.addAttribute("medicos", medicos);
 
         return "paciente/paciente_dashboard";
     }
+
 }
