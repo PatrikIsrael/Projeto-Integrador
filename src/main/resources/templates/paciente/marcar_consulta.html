@@ -7,29 +7,64 @@
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-<div class="container">
-    <h1>Marcar Consulta</h1>
-    <form th:action="@{/marcarConsulta}" th:object="${consulta}" method="post">
+<body class="bg-light">
+<div class="container py-4">
+    <h1 class="mb-4">Marcar Nova Consulta</h1>
+
+    <!-- Formulário para marcar consulta -->
+    <form th:action="@{/paciente/marcarConsulta}" th:object="${consulta}" method="post">
         <div class="form-group">
             <label for="descricao">Descrição:</label>
-            <input type="text" id="descricao" th:field="*{descricao}" class="form-control" required />
+            <input type="text" id="descricao" class="form-control" th:field="*{descricao}" required>
         </div>
 
         <div class="form-group">
             <label for="data">Data:</label>
-            <input type="date" id="data" th:field="*{data}" class="form-control" required />
+            <input type="date" id="data" class="form-control" th:field="*{data}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="horario">Horário:</label>
+            <select id="horario" class="form-control" th:field="*{horario}" required>
+                <option value="">Selecione o horário</option>
+                <option value="08:00">08:00</option>
+                <option value="08:30">08:30</option>
+                <option value="09:00">09:00</option>
+                <option value="09:30">09:30</option>
+                <option value="10:00">10:00</option>
+                <option value="10:30">10:30</option>
+                <option value="11:00">11:00</option>
+                <option value="11:30">11:30</option>
+                <option value="12:00">12:00</option>
+                <option value="12:30">12:30</option>
+                <option value="13:00">13:00</option>
+                <option value="13:30">13:30</option>
+                <option value="14:00">14:00</option>
+                <option value="14:30">14:30</option>
+                <option value="15:00">15:00</option>
+                <option value="15:30">15:30</option>
+                <option value="16:00">16:00</option>
+                <option value="16:30">16:30</option>
+                <option value="17:00">17:00</option>
+                <option value="17:30">17:30</option>
+            </select>
         </div>
 
         <div class="form-group">
             <label for="medico">Médico:</label>
-            <select id="medico" th:field="*{medico}" class="form-control" required>
+            <select id="medico" class="form-control" th:field="*{medico}" required>
+                <option value="">Selecione o médico</option>
                 <option th:each="medico : ${medicos}" th:value="${medico.id}" th:text="${medico.nome}"></option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block">Marcar Consulta</button>
+        <button type="submit" class="btn btn-primary">Marcar Consulta</button>
     </form>
+
+    <!-- Mensagem de erro -->
+    <div th:if="${error}" class="alert alert-danger mt-3">
+        <p th:text="${error}"></p>
+    </div>
 </div>
 
 <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
