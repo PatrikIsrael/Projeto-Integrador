@@ -7,7 +7,7 @@ import com.example.Projeto.Repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -40,8 +40,17 @@ public class PacienteService {
     }
 
     public boolean verificarConflitoConsulta(Consulta consulta) {
-        // Verifica se já existe uma consulta do mesmo médico na mesma data e horário
-        return consultaRepository.existsByMedicoAndDataAndHorario(consulta.getMedico(), consulta.getData(), consulta.getHorario());
+        // Busca todas as consultas do médico para a data da consulta
+        List<Consulta> consultasNoMesmoHorario = consultaRepository.findByMedicoAndData(
+                consulta.getMedico(), consulta.getData());
+
+        // Verifica se já existe uma consulta do mesmo médico na mesma data
+        for (Consulta c : consultasNoMesmoHorario) {
+            if (c.getData().equals(consulta.getData())) {
+                return true; // Conflito encontrado
+            }
+        }
+        return false; // Nenhum conflito encontrado
     }
 
     public Consulta marcarConsulta(Consulta consulta) {
@@ -51,21 +60,8 @@ public class PacienteService {
     public List<Consulta> listarConsultasPorPaciente(Paciente paciente) {
         return consultaRepository.findByPaciente(paciente);
     }
-
     public int contarConsultasMarcadasPorPaciente(Paciente paciente) {
         List<Consulta> consultasPaciente = consultaRepository.findByPaciente(paciente);
         return consultasPaciente.size();
-    }
-
-    public boolean pacientePodeMarcarConsulta(Paciente paciente) {
-        // Verificar se o paciente já atingiu o limite de 10 consultas
-        return contarConsultasMarcadasPorPaciente(paciente) < 10;
-    }
-
-    public boolean validarHorarioConsulta(LocalTime horario) {
-        // Verificar se o horário está dentro do intervalo permitido (8h às 17h) e em intervalos de 30 minutos
-        return !horario.isBefore(LocalTime.of(8, 0)) &&
-                !horario.isAfter(LocalTime.of(17, 0)) &&
-                horario.getMinute() % 30 == 0;
     }
 }
