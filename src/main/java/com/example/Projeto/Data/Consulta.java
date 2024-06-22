@@ -15,6 +15,9 @@ public class Consulta {
     private String descricao;
     private LocalDate data;
     private LocalTime horario;
+    private statusConsulta status;
+
+
 
     @ManyToOne
     @JoinColumn(name = "paciente_id")
@@ -72,5 +75,12 @@ public class Consulta {
 
     public void setMedico(Medico medico) {
         this.medico = medico;
+    }
+    public statusConsulta getStatus() {
+        return status;
+    }
+
+    public void setStatus(statusConsulta status) {
+        this.status = status;
     }
 }
