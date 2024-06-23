@@ -12,6 +12,7 @@
     --cor-bg-header: #4a90e2; /* Fundo do cabeçalho */
     --cor-btn-primary: #4a90e2; /* Botão principal */
     --cor-btn-primary-hover: #357bd8; /* Hover do botão principal */
+    --cor-bg-table-odd: #f9f9f9; /* Fundo ímpar da tabela */
 }
 
 /* Estilos gerais */
@@ -44,6 +45,7 @@ header {
     background-color: var(--cor-bg-header);
     padding: 15px 0;
     text-align: center;
+    color: #ffffff;
 }
 
 /* Botões */
@@ -142,4 +144,69 @@ h1 {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+}
+
+/* Dashboard do Paciente */
+.container {
+    max-width: 100%;
+    padding: 20px;
+}
+
+h1.mb-4 {
+    margin-bottom: 20px;
+}
+
+ul.list-group {
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #333333;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-top: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: var(--cor-primaria);
+    color: #ffffff;
+}
+
+.table tbody tr:nth-child(odd) {
+    background-color: var(--cor-bg-table-odd);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.table .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #ffffff;
+}
+
+.table .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.alert {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
 }
