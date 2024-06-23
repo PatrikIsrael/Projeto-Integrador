@@ -12,15 +12,18 @@
     <h1 class="mb-4">Marcar Nova Consulta</h1>
 
     <!-- Formulário para marcar consulta -->
-    <form th:action="@{/paciente/marcarConsulta}" th:object="${consulta}" method="post">
+    <form id="consultaForm" th:action="@{/paciente/marcarConsulta}" th:object="${consulta}" method="post">
         <div class="form-group">
             <label for="descricao">Descrição:</label>
             <input type="text" id="descricao" class="form-control" th:field="*{descricao}" required>
         </div>
 
+        <!-- Campo oculto para enviar a data no formato yyyy-MM-dd -->
+        <input type="hidden" id="dataHidden" th:field="*{data}" th:value="${#dates.format(consulta.data, 'yyyy-MM-dd')}">
+
         <div class="form-group">
             <label for="data">Data:</label>
-            <input type="date" id="data" class="form-control" th:field="*{data}" required>
+            <input type="date" id="data" class="form-control" onchange="updateHiddenDate()">
         </div>
 
         <div class="form-group">
@@ -46,7 +49,6 @@
                 <option value="16:00">16:00</option>
                 <option value="16:30">16:30</option>
                 <option value="17:00">17:00</option>
-                <option value="17:30">17:30</option>
             </select>
         </div>
 
@@ -66,8 +68,8 @@
         <p th:text="${error}"></p>
     </div>
 </div>
-
 <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
 <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/validacaoConsulta.js}"></script>
 </body>
 </html>

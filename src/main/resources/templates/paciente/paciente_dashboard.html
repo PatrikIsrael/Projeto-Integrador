@@ -16,7 +16,6 @@
         <a th:href="@{/paciente/logout}" class="btn btn-danger">Sair</a>
     </div>
 
-
     <div class="row">
         <!-- Dados do paciente -->
         <div class="col-md-6">
@@ -25,7 +24,10 @@
                 <li class="list-group-item">Email: <span th:text="${paciente.email}">Email</span></li>
                 <li class="list-group-item">CPF: <span th:text="${paciente.cpf}">CPF</span></li>
                 <li class="list-group-item">Telefone: <span th:text="${paciente.telefone}">Telefone</span></li>
-                <li class="list-group-item">Data de Nascimento: <span th:text="${paciente.dataNascimento}">Data de Nascimento</span></li>
+                <li class="list-group-item">Data de Nascimento:
+                    <span th:text="${#temporals.format(paciente.dataNascimento, 'dd/MM/yyyy')}"></span>
+                    <span th:unless="${paciente.dataNascimento != null}">Data de Nascimento não especificada</span>
+                </li>
             </ul>
         </div>
 
@@ -50,20 +52,31 @@
                 <table class="table">
                     <thead>
                     <tr>
+                        <th>Descrição</th>
                         <th>Data</th>
                         <th>Horário</th>
                         <th>Médico</th>
                         <th>Especialidade</th>
-                        <th>Detalhes</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="consulta : ${consultasPaciente}">
-                        <td th:text="${consulta.data}">Data</td>
-                        <td th:text="${consulta.horario}">Horário</td>
-                        <td th:text="${consulta.medico.nome}">Médico</td>
-                        <td th:text="${consulta.medico.especialidade}">Especialidade</td>
-                        <td th:text="${consulta.descricao}">Detalhes</td>
+                        <td th:text="${consulta.descricao}"></td>
+                        <td th:text="${#temporals.format(consulta.data, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${consulta.horario}"></td>
+                        <td th:text="${consulta.medico.nome}"></td>
+                        <td th:text="${consulta.medico.especialidade}"></td>
+                        <td th:text="${consulta.status}"></td>
+                        <td>
+                            <!-- Botão de cancelar com log para depuração -->
+                            <button type="button" class="btn btn-danger"
+                                    th:if="${consulta.status == 'AGENDADA' and #temporals.createNow().plusDays(2).toLocalDate().isBefore(consulta.data)}"
+                                    th:onclick="'cancelarConsulta(' + ${consulta.id} + ')'"
+                                    onclick="console.log('Status:', ${consulta.status}, 'Data da Consulta:', ${consulta.data}, 'Data Atual + 2 dias:', ${#temporals.createNow().plusDays(2).toLocalDate()});">Cancelar</button>
+
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -79,5 +92,7 @@
 
 <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
 <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/validacaoDashboard.js}"></script>
+<script th:src="@{/js/status.js}"></script>
 </body>
 </html>

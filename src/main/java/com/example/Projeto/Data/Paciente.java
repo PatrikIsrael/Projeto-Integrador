@@ -1,6 +1,7 @@
 package com.example.Projeto.Data;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;  // Importe a classe LocalDate
 import java.util.List;
 
 @Entity
@@ -14,13 +15,17 @@ public class Paciente {
     private String cpf;
     private String email;
     private String telefone;
-    private String dataNascimento;
+
+    @Column(name = "data_nascimento")
+    private LocalDate dataNascimento;
 
     @OneToMany(mappedBy = "paciente")
     private List<Consulta> consultas;
 
     public Paciente() {
     }
+
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -62,11 +67,11 @@ public class Paciente {
         this.telefone = telefone;
     }
 
-    public String getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(String dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 
