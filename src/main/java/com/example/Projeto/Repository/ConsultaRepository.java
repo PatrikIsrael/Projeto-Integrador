@@ -4,6 +4,8 @@ import com.example.Projeto.Data.Consulta;
 import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -36,5 +38,8 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 
     List<Consulta> findByPaciente_Id(Long id);
 
+    boolean existsByDataAndHorarioAndMedico(LocalDate data, LocalTime horario, Medico medico);
 
+    @Query("SELECT c FROM Consulta c WHERE c.data = :data AND c.horario = :horario AND c.medico.id = :medicoId")
+    Consulta findConsultaByDataAndHorarioAndMedico(@Param("data") LocalDate data, @Param("horario") LocalTime horario, @Param("medicoId") Long medicoId);
 }
