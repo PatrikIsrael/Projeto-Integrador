@@ -4,12 +4,13 @@ import com.example.Projeto.Data.Consulta;
 import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
 import com.example.Projeto.Services.ConsultaService;
+import com.example.Projeto.Services.MedicoService;
 import com.example.Projeto.Services.PacienteService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -27,17 +28,16 @@ public class PacienteController {
     @Autowired
     private ConsultaService consultaService;
 
+    @Autowired
+    private MedicoService medicoService;
+
     @GetMapping("/login")
     public String login() {
         return "paciente/paciente_login";
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, SessionStatus status, RedirectAttributes redirectAttributes) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+    public String logout(SessionStatus status, RedirectAttributes redirectAttributes) {
         status.setComplete(); // Finaliza a sessão Spring
         redirectAttributes.addFlashAttribute("successMessage", "Logout efetuado com sucesso!");
         return "redirect:/paciente/login";
@@ -63,7 +63,11 @@ public class PacienteController {
     }
 
     @PostMapping("/cadastro")
-    public String doCadastro(Model model, @ModelAttribute Paciente paciente) {
+    public String doCadastro(Model model, @ModelAttribute @Valid Paciente paciente, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            return "paciente/paciente_cadastro";
+        }
+
         Paciente novoPaciente = pacienteService.cadastrar(paciente);
         if (novoPaciente != null) {
             model.addAttribute("successMessage", "Cadastro efetuado com sucesso! Faça o login.");
@@ -76,9 +80,6 @@ public class PacienteController {
 
     @GetMapping("/dashboard")
     public String pacienteDashboard(Model model, @SessionAttribute("paciente") Paciente paciente) {
-        model.addAttribute("paciente", paciente);
-
-
         Consulta consulta = new Consulta();
         model.addAttribute("consulta", consulta);
 
@@ -90,5 +91,8 @@ public class PacienteController {
 
         return "paciente/paciente_dashboard";
     }
+
+
+
 
 }

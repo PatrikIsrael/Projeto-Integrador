@@ -7,11 +7,12 @@ import com.example.Projeto.Repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class PacienteService {
+
+    private static final int MAX_CONSULTAS_POR_PACIENTE = 10;
 
     @Autowired
     private PacienteRepository pacienteRepository;
@@ -20,48 +21,31 @@ public class PacienteService {
     private ConsultaRepository consultaRepository;
 
     public Paciente autenticar(String email, String cpf) {
-        Paciente paciente = pacienteRepository.findByEmail(email);
-        if (paciente != null && paciente.getCpf().equals(cpf)) {
-            return paciente;
-        }
-        return null;
+        return pacienteRepository.findByEmailAndCpf(email, cpf);
     }
 
-    public Paciente cadastrar(Paciente paciente) {
-        if (pacienteRepository.findByCpf(paciente.getCpf()) == null &&
-                pacienteRepository.findByEmail(paciente.getEmail()) == null) {
-            return pacienteRepository.save(paciente);
+    public Paciente cadastrar(Paciente paciente) throws Exception {
+        // Verifica se já existe um paciente com o mesmo CPF ou e-mail
+        if (pacienteRepository.findByCpf(paciente.getCpf()).isPresent()) {
+            throw new Exception("Este CPF já está cadastrado.");
         }
-        return null;
+
+        if (pacienteRepository.findByEmail(paciente.getEmail()).isPresent()) {
+            throw new Exception("Este e-mail já está cadastrado.");
+        }
+
+        return pacienteRepository.save(paciente);
     }
 
     public List<Consulta> obterConsultas(Paciente paciente) {
-        return consultaRepository.findByPaciente(paciente);
+        return consultaRepository.findByPacienteOrderByDataAscHorarioAsc(paciente);
     }
 
-    public boolean verificarConflitoConsulta(Consulta consulta) {
-        // Busca todas as consultas do médico para a data da consulta
-        List<Consulta> consultasNoMesmoHorario = consultaRepository.findByMedicoAndData(
-                consulta.getMedico(), consulta.getData());
-
-        // Verifica se já existe uma consulta do mesmo médico na mesma data
-        for (Consulta c : consultasNoMesmoHorario) {
-            if (c.getData().equals(consulta.getData())) {
-                return true; // Conflito encontrado
-            }
-        }
-        return false; // Nenhum conflito encontrado
-    }
-
-    public Consulta marcarConsulta(Consulta consulta) {
-        return consultaRepository.save(consulta);
-    }
-
-    public List<Consulta> listarConsultasPorPaciente(Paciente paciente) {
-        return consultaRepository.findByPaciente(paciente);
-    }
     public int contarConsultasMarcadasPorPaciente(Paciente paciente) {
-        List<Consulta> consultasPaciente = consultaRepository.findByPaciente(paciente);
-        return consultasPaciente.size();
+        return consultaRepository.countByPaciente(paciente);
+    }
+
+    public boolean pacientePodeMarcarConsulta(Paciente paciente) {
+        return contarConsultasMarcadasPorPaciente(paciente) < MAX_CONSULTAS_POR_PACIENTE;
     }
 }

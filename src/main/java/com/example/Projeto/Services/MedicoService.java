@@ -37,4 +37,8 @@ public class MedicoService {
     public boolean existeMedicoPorCrm(String crm) {
         return medicoRepository.existsByCrm(crm);
     }
+
+    public Medico findById(Long medicoId) {
+        return null;
+    }
 }
