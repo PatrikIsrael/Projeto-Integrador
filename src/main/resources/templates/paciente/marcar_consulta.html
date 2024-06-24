@@ -23,13 +23,14 @@
 
         <div class="form-group">
             <label for="data">Data:</label>
-            <input type="date" id="data" class="form-control" onchange="updateHiddenDate()">
+            <input type="date" id="data" class="form-control" onchange="updateHiddenDate()" required>
         </div>
 
         <div class="form-group">
             <label for="horario">Horário:</label>
             <select id="horario" class="form-control" th:field="*{horario}" required>
                 <option value="">Selecione o horário</option>
+                <!-- Opções de horário -->
                 <option value="08:00">08:00</option>
                 <option value="08:30">08:30</option>
                 <option value="09:00">09:00</option>
@@ -54,7 +55,7 @@
 
         <div class="form-group">
             <label for="medico">Médico:</label>
-            <select id="medico" class="form-control" th:field="*{medico}" required>
+            <select id="medico" class="form-control" th:field="*{medico.id}" required>
                 <option value="">Selecione o médico</option>
                 <option th:each="medico : ${medicos}" th:value="${medico.id}" th:text="${medico.nome}"></option>
             </select>
