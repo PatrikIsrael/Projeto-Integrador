@@ -25,52 +25,16 @@ public class ConsultaService {
     @Autowired
     private PacienteService pacienteService;
 
-    public List<Consulta> findAll() {
-        return consultaRepository.findAll();
-    }
-
-    public Consulta findById(Long id) {
-        return consultaRepository.findById(id).orElse(null);
-    }
-
     public Consulta save(Consulta consulta) {
         return consultaRepository.save(consulta);
-    }
-
-    public void delete(Long id) {
-        consultaRepository.deleteById(id);
     }
 
     public List<Consulta> findByData(LocalDate data) {
         return consultaRepository.findByData(data);
     }
 
-    public boolean verificarDisponibilidadeConsulta(Consulta consulta) {
-        return !consultaRepository.existsByMedicoAndDataAndHorario(consulta.getMedico(), consulta.getData(), consulta.getHorario());
-    }
-
     public List<Consulta> findConsultasByPaciente(Long idPaciente) {
         return consultaRepository.findByPaciente_Id(idPaciente);
-    }
-
-    public List<Medico> getAllMedicos() {
-        return medicoRepository.findAll();
-    }
-
-    public boolean validarHorarioConsulta(LocalTime horario) {
-        LocalTime inicio = LocalTime.of(8, 0);
-        LocalTime fim = LocalTime.of(17, 0);
-        return (horario.isAfter(inicio.minusMinutes(1)) && horario.isBefore(fim.plusMinutes(1)))
-                && (horario.getMinute() == 0 || horario.getMinute() == 30);
-    }
-
-    public boolean validarDataConsulta(LocalDate data) {
-        if (data == null) {
-            return false;
-        }
-        LocalDate hoje = LocalDate.now();
-        LocalDate dataLimite = hoje.plusDays(2);
-        return data.isAfter(dataLimite) && !(data.getDayOfWeek().getValue() >= 6);
     }
 
     public List<Consulta> findConsultasByMedicoAndData(Long id, LocalDate data) {
@@ -109,5 +73,53 @@ public class ConsultaService {
 
         // Salvar a consulta
         return consultaRepository.save(consulta);
+    }
+
+    private boolean verificarDisponibilidadeConsulta(Consulta consulta) {
+        return !consultaRepository.existsByDataAndHorarioAndMedico(consulta.getData(), consulta.getHorario(), consulta.getMedico());
+    }
+
+    public void cancelarConsulta(Long consultaId) {
+        Consulta consulta = findById(consultaId);
+        if (consulta != null && consulta.getStatus() == statusConsulta.AGENDADA) {
+            consulta.setStatus(statusConsulta.CANCELADA);
+            save(consulta);
+        } else {
+            throw new IllegalArgumentException("Consulta não pode ser cancelada. Somente consultas agendadas podem ser canceladas.");
+        }
+    }
+
+    public Consulta findById(Long consultaId) {
+        return consultaRepository.findById(consultaId).orElse(null);
+    }
+
+    public boolean existeConsultaNaDataEHora(Consulta consulta) {
+        // Verifica se já existe consulta marcada para a mesma data e horário
+        return consultaRepository.existsByDataAndHorarioAndMedico(consulta.getData(), consulta.getHorario(), consulta.getMedico());
+    }
+
+    public boolean isConsultaAvailable(LocalDate data, LocalTime horario, Long medicoId) {
+        Consulta consulta = consultaRepository.findConsultaByDataAndHorarioAndMedico(data, horario, medicoId);
+        return consulta == null; // Disponível se não existir consulta
+    }
+
+    public boolean validarHorarioConsulta(LocalTime horario) {
+        LocalTime inicio = LocalTime.of(8, 0);
+        LocalTime fim = LocalTime.of(17, 0);
+        return (horario.isAfter(inicio.minusMinutes(1)) && horario.isBefore(fim.plusMinutes(1)))
+                && (horario.getMinute() == 0 || horario.getMinute() == 30);
+    }
+
+    public boolean validarDataConsulta(LocalDate data) {
+        if (data == null) {
+            return false;
+        }
+        LocalDate hoje = LocalDate.now();
+        LocalDate dataLimite = hoje.plusDays(2);
+        return data.isAfter(dataLimite) && !(data.getDayOfWeek().getValue() >= 6);
+    }
+
+    public List<Medico> getAllMedicos() {
+    return medicoRepository.findAll();
     }
 }
