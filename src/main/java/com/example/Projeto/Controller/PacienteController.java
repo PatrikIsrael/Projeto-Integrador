@@ -63,7 +63,7 @@ public class PacienteController {
     }
 
     @PostMapping("/cadastro")
-    public String doCadastro(Model model, @ModelAttribute @Valid Paciente paciente, BindingResult result) {
+    public String doCadastro(Model model, @ModelAttribute @Valid Paciente paciente, BindingResult result) throws Exception {
         if (result.hasErrors()) {
             return "paciente/paciente_cadastro";
         }

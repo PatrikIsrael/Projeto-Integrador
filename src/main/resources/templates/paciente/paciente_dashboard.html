@@ -25,8 +25,9 @@
                 <li class="list-group-item">CPF: <span th:text="${paciente.cpf}">CPF</span></li>
                 <li class="list-group-item">Telefone: <span th:text="${paciente.telefone}">Telefone</span></li>
                 <li class="list-group-item">Data de Nascimento:
-                    <span th:text="${#temporals.format(paciente.dataNascimento, 'dd/MM/yyyy')}"></span>
-                    <span th:unless="${paciente.dataNascimento != null}">Data de Nascimento não especificada</span>
+                    <span th:if="${paciente.dataNascimento != null}"
+                          th:text="${#temporals.format(paciente.dataNascimento, 'dd/MM/yyyy')}"></span>
+                    <span th:if="${paciente.dataNascimento == null}">Data de Nascimento não especificada</span>
                 </li>
             </ul>
         </div>
@@ -68,14 +69,13 @@
                         <td th:text="${consulta.horario}"></td>
                         <td th:text="${consulta.medico.nome}"></td>
                         <td th:text="${consulta.medico.especialidade}"></td>
-                        <td th:text="${consulta.status}"></td>
+                        <td th:text="${consulta.status != null ? consulta.status.name() : 'Status Desconhecido'}"></td>
                         <td>
-                            <!-- Botão de cancelar com log para depuração -->
                             <button type="button" class="btn btn-danger"
-                                    th:if="${consulta.status == 'AGENDADA' and #temporals.createNow().plusDays(2).toLocalDate().isBefore(consulta.data)}"
-                                    th:onclick="'cancelarConsulta(' + ${consulta.id} + ')'"
-                                    onclick="console.log('Status:', ${consulta.status}, 'Data da Consulta:', ${consulta.data}, 'Data Atual + 2 dias:', ${#temporals.createNow().plusDays(2).toLocalDate()});">Cancelar</button>
-
+                                    th:attr="data-consulta-id=${consulta.id}"
+                                    onclick="cancelarConsulta(this.getAttribute('data-consulta-id'), '${consulta.data}')">
+                                Cancelar
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -93,6 +93,6 @@
 <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
 <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
 <script th:src="@{/js/validacaoDashboard.js}"></script>
-<script th:src="@{/js/status.js}"></script>
+
 </body>
 </html>
