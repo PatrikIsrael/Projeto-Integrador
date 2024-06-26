@@ -3,6 +3,7 @@ package com.example.Projeto.Controller;
 import com.example.Projeto.Data.Consulta;
 import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
+import com.example.Projeto.Exception.ProjetoException;
 import com.example.Projeto.Services.ConsultaService;
 import com.example.Projeto.Services.MedicoService;
 import com.example.Projeto.Services.PacienteService;
@@ -45,13 +46,18 @@ public class PacienteController {
 
     @PostMapping("/login")
     public String doLogin(Model model, @RequestParam String email, @RequestParam String cpf) {
-        Paciente paciente = pacienteService.autenticar(email, cpf);
-        if (paciente != null) {
-            model.addAttribute("paciente", paciente);
-            model.addAttribute("successMessage", "Login efetuado com sucesso!");
-            return "redirect:/paciente/dashboard";
-        } else {
-            model.addAttribute("error", "Email ou CPF inválidos");
+        try {
+            Paciente paciente = pacienteService.autenticar(email, cpf);
+            if (paciente != null) {
+                model.addAttribute("paciente", paciente);
+                model.addAttribute("successMessage", "Login efetuado com sucesso!");
+                return "redirect:/paciente/dashboard";
+            } else {
+                model.addAttribute("error", "Email ou CPF inválidos");
+                return "paciente/paciente_login";
+            }
+        } catch (ProjetoException e) {
+            model.addAttribute("error", e.getMessage());
             return "paciente/paciente_login";
         }
     }
@@ -63,36 +69,42 @@ public class PacienteController {
     }
 
     @PostMapping("/cadastro")
-    public String doCadastro(Model model, @ModelAttribute @Valid Paciente paciente, BindingResult result) throws Exception {
-        if (result.hasErrors()) {
-            return "paciente/paciente_cadastro";
-        }
+    public String doCadastro(Model model, @ModelAttribute @Valid Paciente paciente, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                return "paciente/paciente_cadastro";
+            }
 
-        Paciente novoPaciente = pacienteService.cadastrar(paciente);
-        if (novoPaciente != null) {
-            model.addAttribute("successMessage", "Cadastro efetuado com sucesso! Faça o login.");
-            return "redirect:/paciente/login";
-        } else {
-            model.addAttribute("error", "Esse CPF já possui cadastro");
+            Paciente novoPaciente = pacienteService.cadastrar(paciente);
+            if (novoPaciente != null) {
+                model.addAttribute("successMessage", "Cadastro efetuado com sucesso! Faça o login.");
+                return "redirect:/paciente/login";
+            } else {
+                model.addAttribute("error", "Esse CPF já possui cadastro");
+                return "paciente/paciente_cadastro";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
             return "paciente/paciente_cadastro";
         }
     }
 
     @GetMapping("/dashboard")
     public String pacienteDashboard(Model model, @SessionAttribute("paciente") Paciente paciente) {
-        Consulta consulta = new Consulta();
-        model.addAttribute("consulta", consulta);
+        try {
+            Consulta consulta = new Consulta();
+            model.addAttribute("consulta", consulta);
 
-        List<Consulta> consultasPaciente = consultaService.findConsultasByPaciente(paciente.getId());
-        model.addAttribute("consultasPaciente", consultasPaciente);
+            List<Consulta> consultasPaciente = consultaService.findConsultasByPaciente(paciente.getId());
+            model.addAttribute("consultasPaciente", consultasPaciente);
 
-        List<Medico> medicos = consultaService.getAllMedicos();
-        model.addAttribute("medicos", medicos);
+            List<Medico> medicos = consultaService.getAllMedicos();
+            model.addAttribute("medicos", medicos);
 
-        return "paciente/paciente_dashboard";
+            return "paciente/paciente_dashboard";
+        } catch (ProjetoException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/paciente/login";
+        }
     }
-
-
-
-
 }
