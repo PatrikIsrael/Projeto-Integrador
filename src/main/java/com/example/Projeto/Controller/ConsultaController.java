@@ -8,6 +8,7 @@ import com.example.Projeto.Services.ConsultaService;
 import com.example.Projeto.Services.DisponibilidadeService;
 import com.example.Projeto.Services.MedicoService;
 import com.example.Projeto.Services.PacienteService;
+import com.example.Projeto.Exception.ProjetoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +36,6 @@ public class ConsultaController {
     @Autowired
     private DisponibilidadeService disponibilidadeService;
 
-    @Autowired
-    private ConsultaService consultaRepository;
-
     @GetMapping("/marcarConsulta")
     public String mostrarFormularioMarcarConsulta(Model model, @SessionAttribute("paciente") Paciente paciente) {
         if (!pacienteService.pacientePodeMarcarConsulta(paciente)) {
@@ -56,7 +54,7 @@ public class ConsultaController {
         try {
             Consulta consulta = consultaService.findById(consultaId);
             if (consulta == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consulta não encontrada.");
+                throw new ProjetoException("Consulta não encontrada com o ID: " + consultaId);
             }
 
             consultaService.cancelarConsulta(consultaId);
@@ -65,61 +63,56 @@ public class ConsultaController {
             disponibilidadeService.liberarHorario(consulta.getData(), consulta.getHorario(), consulta.getMedico());
 
             return ResponseEntity.ok("Consulta cancelada com sucesso.");
+        } catch (ProjetoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cancelar a consulta.");
         }
     }
-
 
     @PostMapping("/marcarConsulta")
     public String processarFormularioMarcarConsulta(@ModelAttribute Consulta consulta, Model model, @SessionAttribute("paciente") Paciente paciente) {
         consulta.setPaciente(paciente);
         List<Medico> medicos = medicoService.listarTodosMedicos();
 
-        // Verificar se a data não é nula
-        if (consulta.getData() == null) {
-            model.addAttribute("error", "A data da consulta é obrigatória.");
-            model.addAttribute("medicos", medicos);
-            return "paciente/marcar_consulta";
-        }
+        try {
+            // Verificar se a data não é nula
+            if (consulta.getData() == null) {
+                throw new ProjetoException("A data da consulta é obrigatória.");
+            }
 
-        // Verificar se o paciente pode marcar mais consultas
-        if (!pacienteService.pacientePodeMarcarConsulta(paciente)) {
-            model.addAttribute("error", "Você já possui 10 consultas marcadas. Não é possível agendar mais consultas.");
-            model.addAttribute("medicos", medicos);
-            return "paciente/marcar_consulta";
-        }
+            // Verificar se o paciente pode marcar mais consultas
+            if (!pacienteService.pacientePodeMarcarConsulta(paciente)) {
+                throw new ProjetoException("Você já possui 10 consultas marcadas. Não é possível agendar mais consultas.");
+            }
 
-        // Verificar conflitos de horário
-        if (consultaService.existeConsultaNaDataEHora((consulta))){
-            model.addAttribute("error", "Já existe uma consulta marcada para este médico neste horário.");
-            model.addAttribute("medicos", medicos);
-            return "paciente/marcar_consulta";
-        }
+            // Verificar conflitos de horário
+            if (consultaService.existeConsultaNaDataEHora(consulta)) {
+                throw new ProjetoException("Já existe uma consulta marcada para este médico neste horário.");
+            }
 
-        // Verificar se o horário está dentro do intervalo permitido (8h às 17h)
-        LocalTime horario = consulta.getHorario();
-        if (!consultaService.validarHorarioConsulta(horario)) {
-            model.addAttribute("error", "Você só pode marcar consultas entre 8h e 17h em intervalos de meia hora.");
-            model.addAttribute("medicos", medicos);
-            return "paciente/marcar_consulta";
-        }
+            // Verificar se o horário está dentro do intervalo permitido (8h às 17h)
+            LocalTime horario = consulta.getHorario();
+            if (!consultaService.validarHorarioConsulta(horario)) {
+                throw new ProjetoException("Você só pode marcar consultas entre 8h e 17h em intervalos de meia hora.");
+            }
 
-        // Verificar se a data está pelo menos 2 dias no futuro e se é um dia de semana
-        if (!consultaService.validarDataConsulta(consulta.getData())) {
-            model.addAttribute("error", "As consultas só podem ser marcadas com pelo menos 2 dias de antecedência e apenas em dias de semana (segunda a sexta).");
-            model.addAttribute("medicos", medicos);
-            return "paciente/marcar_consulta";
-        }
+            // Verificar se a data está pelo menos 2 dias no futuro e se é um dia de semana
+            if (!consultaService.validarDataConsulta(consulta.getData())) {
+                throw new ProjetoException("As consultas só podem ser marcadas com pelo menos 2 dias de antecedência e apenas em dias de semana (segunda a sexta).");
+            }
 
-        // Salvar a consulta
-        Consulta consultaSalva = consultaService.save(consulta);
-        if (consultaSalva != null) {
+            // Salvar a consulta
+            Consulta consultaSalva = consultaService.save(consulta);
             consultaSalva.setStatus(statusConsulta.AGENDADA);
             consultaService.save(consultaSalva); // Salva a consulta com o status AGENDADA atualizado
             model.addAttribute("successMessage", "Consulta marcada com sucesso!");
             return "redirect:/paciente/dashboard";
-        } else {
+        } catch (ProjetoException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("medicos", medicos);
+            return "paciente/marcar_consulta";
+        } catch (Exception e) {
             model.addAttribute("error", "Erro ao tentar marcar a consulta. Por favor, tente novamente.");
             model.addAttribute("medicos", medicos);
             return "paciente/marcar_consulta";
