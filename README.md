@@ -9,7 +9,6 @@
 - HTML
 - CSS
 - JavaScript
-- AJAX
 - MySQL
 
 ## Desenvolvedore
