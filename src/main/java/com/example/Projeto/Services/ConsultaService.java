@@ -4,6 +4,7 @@ import com.example.Projeto.Data.Consulta;
 import com.example.Projeto.Data.Medico;
 import com.example.Projeto.Data.Paciente;
 import com.example.Projeto.Data.statusConsulta;
+import com.example.Projeto.Exception.ProjetoException;
 import com.example.Projeto.Repository.ConsultaRepository;
 import com.example.Projeto.Repository.MedicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class ConsultaService {
     public List<Consulta> findConsultasByMedicoAndData(Long id, LocalDate data) {
         Medico medico = medicoRepository.findById(id).orElse(null);
         if (medico == null) {
-            return List.of();
+            throw new ProjetoException("Médico não encontrado com o ID: " + id);
         }
         return consultaRepository.findByMedicoAndData(medico, data);
     }
@@ -50,22 +51,22 @@ public class ConsultaService {
 
         // Verificar se o paciente pode marcar mais consultas
         if (!pacienteService.pacientePodeMarcarConsulta(paciente)) {
-            throw new IllegalArgumentException("Você já possui 10 consultas marcadas. Não é possível agendar mais consultas.");
+            throw new ProjetoException("Você já possui 10 consultas marcadas. Não é possível agendar mais consultas.");
         }
 
         // Verificar se o horário da consulta é válido
         if (!validarHorarioConsulta(consulta.getHorario())) {
-            throw new IllegalArgumentException("Horário da consulta inválido. As consultas são permitidas apenas entre 8h e 17h em intervalos de meia hora.");
+            throw new ProjetoException("Horário da consulta inválido. As consultas são permitidas apenas entre 8h e 17h em intervalos de meia hora.");
         }
 
         // Validar a data da consulta
         if (!validarDataConsulta(consulta.getData())) {
-            throw new IllegalArgumentException("Data da consulta inválida. A consulta deve ser marcada com pelo menos 2 dias de antecedência e apenas em dias de semana (segunda a sexta-feira).");
+            throw new ProjetoException("Data da consulta inválida. A consulta deve ser marcada com pelo menos 2 dias de antecedência e apenas em dias de semana (segunda a sexta-feira).");
         }
 
         // Verificar se há conflito de horário
         if (!verificarDisponibilidadeConsulta(consulta)) {
-            throw new IllegalArgumentException("Conflito de horário. Já existe uma consulta marcada para este médico neste horário.");
+            throw new ProjetoException("Conflito de horário. Já existe uma consulta marcada para este médico neste horário.");
         }
 
         // Definir o status inicial da consulta como AGENDADA
@@ -85,7 +86,7 @@ public class ConsultaService {
             consulta.setStatus(statusConsulta.CANCELADA);
             save(consulta);
         } else {
-            throw new IllegalArgumentException("Consulta não pode ser cancelada. Somente consultas agendadas podem ser canceladas.");
+            throw new ProjetoException("Consulta não pode ser cancelada. Somente consultas agendadas podem ser canceladas.");
         }
     }
 
@@ -120,6 +121,6 @@ public class ConsultaService {
     }
 
     public List<Medico> getAllMedicos() {
-    return medicoRepository.findAll();
+        return medicoRepository.findAll();
     }
 }
