@@ -1,12 +1,12 @@
 package com.example.Projeto.Exception;
 
-public class Exception extends RuntimeException {
+public class ProjetoException extends RuntimeException {
 
-    public void ConsultaException(String message) {
+    public ProjetoException(String message) {
         super(message);
     }
 
-    public void PacienteException(String message, Throwable cause) {
+    public ProjetoException(String message, Throwable cause) {
         super(message, cause);
     }
 }
